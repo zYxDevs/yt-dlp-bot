@@ -273,11 +273,9 @@ class MediaDownloader:
     def _get_video_filepath(self, meta: dict) -> str:
         if meta['_type'] == self._PLAYLIST_TYPE:
             requested_downloads: list[dict] = meta['entries'][0]['requested_downloads']
-            requested_video = self._get_requested_video(requested_downloads)
         else:
             requested_downloads = meta['requested_downloads']
-            requested_video = self._get_requested_video(requested_downloads)
-
+        requested_video = self._get_requested_video(requested_downloads)
         try:
             return requested_video['filepath']
         except (AttributeError, KeyError):

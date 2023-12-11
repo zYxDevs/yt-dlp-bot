@@ -37,22 +37,17 @@ DEFAULT_SLEEP_TIME = 1
 class ServiceRegistry(type):
     REGISTRY: dict[str, type['BaseService']] = {}
 
-    def __new__(
-        mcs: Type['ServiceRegistry'],
-        name: str,
-        bases: tuple[type['BaseService']],
-        attrs: dict,
-    ) -> type['BaseService']:
-        service_cls: type['BaseService'] = type.__new__(mcs, name, bases, attrs)
-        mcs.REGISTRY[service_cls.__name__] = service_cls
+    def __new__(cls, name: str, bases: tuple[type['BaseService']], attrs: dict) -> type['BaseService']:
+        service_cls: type['BaseService'] = type.__new__(cls, name, bases, attrs)
+        cls.REGISTRY[service_cls.__name__] = service_cls
         return service_cls
 
     @classmethod
-    def get_registry(mcs) -> dict[str, type['BaseService']]:
-        return mcs.REGISTRY.copy()
+    def get_registry(cls) -> dict[str, type['BaseService']]:
+        return cls.REGISTRY.copy()
 
     @classmethod
-    def get_instances(mcs) -> Generator['BaseService', None, None]:
+    def get_instances(cls) -> Generator['BaseService', None, None]:
         return (service_cls() for service_cls in mcs.REGISTRY.values())
 
 

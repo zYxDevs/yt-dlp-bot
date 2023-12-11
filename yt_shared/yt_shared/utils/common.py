@@ -34,9 +34,7 @@ class Singleton(type):
 
 
 def get_env_bool(string: str | bool) -> bool:
-    if isinstance(string, str):
-        return string.lower() in ('true',)
-    return string
+    return string.lower() in ('true',) if isinstance(string, str) else string
 
 
 def wrap(func):

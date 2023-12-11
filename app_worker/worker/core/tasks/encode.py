@@ -25,22 +25,23 @@ class EncodeToH264Task(AbstractFfBinaryTask):
         await self._run()
 
     async def _run(self) -> None:
-        if self._check_if_in_final_format:
-            if not await self._is_already_h264():
-                await self._encode_video()
-        else:
+        if (
+            self._check_if_in_final_format
+            and not await self._is_already_h264()
+            or not self._check_if_in_final_format
+        ):
             await self._encode_video()
 
     async def _is_already_h264(self) -> bool:
         probe_ctx = await GetFfprobeContextTask(self._file_path).run()
         stream: dict
-        for stream in probe_ctx['streams']:
-            if (
+        return any(
+            (
                 stream['codec_type'] == VideoCodecType.VIDEO.value
                 and stream['codec_name'] == VideoCodecName.H264.value
-            ):
-                return True
-        return False
+            )
+            for stream in probe_ctx['streams']
+        )
 
     def _get_output_path(self) -> str:
         filename = f'{self._video.filename.rsplit(".", 1)[0]}-h264.{self._EXT}'

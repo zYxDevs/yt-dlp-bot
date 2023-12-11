@@ -65,9 +65,10 @@ def get_user_id(message: Message) -> int:
 
 
 def build_command_presentation(commands: dict[str, list]) -> str:
-    groups = []
-    for desc, cmds in commands.items():
-        groups.append('{0}\n{1}'.format(desc, '\n'.join(['/' + c for c in cmds])))
+    groups = [
+        '{0}\n{1}'.format(desc, '\n'.join([f'/{c}' for c in cmds]))
+        for desc, cmds in commands.items()
+    ]
     return '\n\n'.join(groups)
 
 

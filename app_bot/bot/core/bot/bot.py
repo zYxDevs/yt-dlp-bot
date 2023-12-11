@@ -43,11 +43,11 @@ class VideoBot(Client):
             await asyncio.sleep(self._RUN_FOREVER_SLEEP_SECONDS)
 
     def get_startup_users(self) -> list[int]:
-        user_ids = []
-        for user in self.allowed_users.values():
-            if user.send_startup_message:
-                user_ids.append(user.id)
-        return user_ids
+        return [
+            user.id
+            for user in self.allowed_users.values()
+            if user.send_startup_message
+        ]
 
     async def send_startup_message(self) -> None:
         """Send welcome message after bot launch."""
@@ -63,10 +63,11 @@ class VideoBot(Client):
     async def send_message_to_users(
         self, text: str, user_ids: Iterable[int], parse_mode: ParseMode = ParseMode.HTML
     ) -> None:
-        coros = []
         self._log.debug('Sending message "%s" to chat ids %s', text, user_ids)
-        for user_id in user_ids:
-            coros.append(self.send_message(user_id, text, parse_mode=parse_mode))
+        coros = [
+            self.send_message(user_id, text, parse_mode=parse_mode)
+            for user_id in user_ids
+        ]
         results = await asyncio.gather(*coros, return_exceptions=True)
         for user_id, result in zip(user_ids, results):
             if isinstance(result, RPCError):
