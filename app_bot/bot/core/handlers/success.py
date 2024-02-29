@@ -38,9 +38,10 @@ class SuccessDownloadHandler(AbstractDownloadHandler):
             self._cleanup()
 
     async def _handle(self) -> None:
-        coro_tasks = []
-        for media_object in self._body.media.get_media_objects():
-            coro_tasks.append(self._handle_media_object(media_object))
+        coro_tasks = [
+            self._handle_media_object(media_object)
+            for media_object in self._body.media.get_media_objects()
+        ]
         try:
             await asyncio.gather(*coro_tasks)
         finally:
